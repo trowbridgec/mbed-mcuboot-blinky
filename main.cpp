@@ -8,7 +8,8 @@
 
 #include "bootutil/bootutil.h"
 #include "bootutil/image.h"
-#include "FlashIAP/FlashIAPBlockDevice.h"
+#include "FlashIAPBlockDevice.h"
+// #include "FlashIAP/FlashIAPBlockDevice.h"
 #include "drivers/InterruptIn.h"
 
 #define TRACE_GROUP "main"
@@ -40,7 +41,7 @@ int main()
         tr_error("Failed to confirm boot: %d", ret);
     }
 
-    InterruptIn btn(DEMO_BUTTON);
+    // InterruptIn btn(DEMO_BUTTON);
 
     // Get the current version from the mcuboot header information
     struct image_version version;
@@ -59,13 +60,14 @@ int main()
 
     tr_info("> Press button to erase secondary slot");
 
-#if DEMO_BUTTON_ACTIVE_LOW
-    while (btn) {
-#else
-    while (!btn) {
-#endif
-        sleep();
-    }
+// #if DEMO_BUTTON_ACTIVE_LOW
+//     while (btn) {
+// #else
+//     while (!btn) {
+// #endif
+//         sleep();
+//     }
+    ThisThread::sleep_for(5000);
 
     BlockDevice *secondary_bd = get_secondary_bd();
     ret = secondary_bd->init();
@@ -85,18 +87,20 @@ int main()
 
     tr_info("> Press button to copy update image to secondary BlockDevice");
 
-#if DEMO_BUTTON_ACTIVE_LOW
-    while (btn) {
-#else
-    while (!btn) {
-#endif
-        sleep();
-    }
+// #if DEMO_BUTTON_ACTIVE_LOW
+//     while (btn) {
+// #else
+//     while (!btn) {
+// #endif
+//         sleep();
+//     }
+    ThisThread::sleep_for(5000);
 
     // Copy the update image from internal flash to secondary BlockDevice
     // This is a "hack" that requires you to preload the update image into `mcuboot.primary-slot-address` + 0x40000
 
-    FlashIAPBlockDevice fbd(MCUBOOT_PRIMARY_SLOT_START_ADDR + 0x40000, 0x20000);
+    FlashIAPBlockDevice fbd(MCUBOOT_PRIMARY_SLOT_START_ADDR + 0x14000, 0x12E00);
+    // FlashIAPBlockDevice fbd(MCUBOOT_PRIMARY_SLOT_START_ADDR + 0x40000, 0x20000);
     ret = fbd.init();
     if (ret == 0) {
         tr_info("FlashIAPBlockDevice inited");
@@ -105,7 +109,8 @@ int main()
     }
 
     static uint8_t buffer[0x1000];
-    for (size_t offset = 0; offset < 0x20000; offset+= sizeof(buffer)) {
+    for (size_t offset = 0; offset < 0x12E00; offset+= sizeof(buffer)) {
+    // for (size_t offset = 0; offset < 0x20000; offset+= sizeof(buffer)) {
         ret = fbd.read(buffer, offset, sizeof(buffer));
         if (ret != 0) {
             tr_error("Failed to read FlashIAPBlockDevice at offset %u", offset);
@@ -120,13 +125,14 @@ int main()
 
     tr_info("> Image copied to secondary BlockDevice, press button to activate");
 
-#if DEMO_BUTTON_ACTIVE_LOW
-    while (btn) {
-#else
-    while (!btn) {
-#endif
-        sleep();
-    }
+// #if DEMO_BUTTON_ACTIVE_LOW
+//     while (btn) {
+// #else
+//     while (!btn) {
+// #endif
+//         sleep();
+//     }
+    ThisThread::sleep_for(5000);
 
     ret = boot_set_pending(false);
     if (ret == 0) {

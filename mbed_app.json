@@ -10,6 +10,9 @@
             "required": false
         }
     },
+    "macros": [
+        "SERIAL_PORT_TYPE_UART=1"
+    ],
     "target_overrides": {
         "*": {
             "mcuboot.bootloader-build": 0,
@@ -55,6 +58,25 @@
             "mcuboot.max-img-sectors": "0x180",
             "mcuboot.read-granularity": 4,
             "qspif.QSPI_MIN_PROG_SIZE": 4
+        },
+        "EP_KAIROS": {
+            "demo-button": "BUTTON1",
+            "demo-button-active-low": true,
+            "target.mbed_app_start": "0x42000",
+            "target.mbed_app_size": "0x12E00",
+            "mcuboot.primary-slot-address": "0x41000",
+            "mcuboot.slot-size": "0x37000",
+            "mcuboot.scratch-address": "0x78000",
+            "mcuboot.scratch-size": "0x10000",
+            "mcuboot.max-img-sectors": "0xC00",
+            "mcuboot.read-granularity": 1,
+            "mcuboot.overwrite-only": true,
+            "target.features_add"                       : ["STORAGE"],
+            "target.extra_labels_add"                   : ["PSA"],
+            "spif-driver.SPI_MOSI"                      : "TE_QSPI_IO0",
+            "spif-driver.SPI_MISO"                      : "TE_QSPI_IO1",
+            "spif-driver.SPI_CLK"                       : "TE_QSPI_CLK",
+            "spif-driver.SPI_CS"                        : "TE_QSPI_CSN"
         }
     }
 }
